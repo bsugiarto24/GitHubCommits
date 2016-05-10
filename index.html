@@ -14,10 +14,10 @@
 
   <!-- window -->
   <div id="w">
-    <h1>Simple Github API Webapp</h1>
+    <h1>Get Latest Commits</h1>
     <p>Enter a single Github username below and click the button to display profile info via JSON.</p>
     
-    <input type="text" name="ghusername" id="ghusername" placeholder="Github username...">
+    <input type="text" name="ghusername" id="ghusername" value="bsugiarto24">
     
     <a href="#" id="ghsubmitbtn">Pull User Data</a>
     
@@ -55,7 +55,7 @@
 
       /* dipslay commits*/
       function outputPageContent2() {
-        if(commits.length == 0) { outhtml = outhtml + '<p>No commits!</p></div>'; }
+        if(commits.length == 0) { outhtml2 = outhtml2 + '<p>No commits!</p></div>'; }
         else {
           outhtml2 = outhtml2 + '<p><strong>Commits List:</strong></p> <ul>';
           outhtml2 = outhtml2 + '<table style="width:100%">';
