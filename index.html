@@ -116,17 +116,13 @@
       individual = json;
 
       //if there are no commits
-      if(individual.commit.parents.length == 0) { 
-        console.log("No commits found");
-      }
-      else {
+      if(individual.commit.parents.length != 0) { 
         commitsuri  = json.commit.url;
         commits = getNextCommits(20, commits, commitsuri, individual);
       } 
 
       //display commits once all network calls are made
       $(document).ajaxStop(function () {
-        console.log(commits);
         displayCommits();
       });
     });
@@ -141,7 +137,6 @@
       //network call to get the next commit
       $.getJSON(url, function(next){
         individual = next;
-        console.log("getNextCommit(): " + count);
         cList.push(next.commit);
 
         //if there is no next commit
