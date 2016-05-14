@@ -99,7 +99,7 @@ a:hover {
   border-radius: 4px;
 }
 
-#ghapidata {
+#ghapidata,#ghapidata2,#ghapidata3 {
   display: block;
   padding: 25px 0;
 }
