@@ -23,111 +23,117 @@
     <div id="ghapidata" class="clearfix"></div>
     <div id="message" class="clearfix"></div>
     <div id="ghapidata3" class="clearfix"></div>
-    <div id="ghapidata2" class="clearfix"></div>
+    <div id="ghapidata2" class=""></div>
   </div>
 
 
 <script type="text/javascript">
-
   // global info
   var username = $('#ghusername').val();
   var requri   = 'https://api.github.com/users/'+username;
   var repouri  = 'https://api.github.com/users/'+username+'/repos';
   var commitsuri  = 'https://api.github.com/repos/<username>/<repo>/commits';
-  var branchesuri = 'https://api.github.com/repos/bsugiarto24/AACFApp/branches';
+  var branchesuri = 'https://api.github.com/repos/<username>/<repo>/branches';
+  var commitsShowing = false;
 
 
-  // display branches when repo button is clicked
+  /*
+   * Repository Click Function
+   * display branches when repo button is clicked
+   */
   function repoClick(repoName) {
-      var outhtml2 = "";
-      var branches;
-      branchesuri = 'https://api.github.com/repos/'+username+'/'+repoName+'/branches';
-    
-      //displays getting branches message
-      $("#message").html('<h3 style="color:red;">Getting Branches...</h2>');
-      $("#message").show().delay(2000).queue(function(n) {
-       $(this).hide(); n();
-      });
+    var outhtml2 = "";
+    var branches;
+    branchesuri = 'https://api.github.com/repos/'+username+'/'+repoName+'/branches';
+  
+    //hide commits div
+    $('#ghapidata2').css('display', 'none');
 
-      // displays branches
-      $.getJSON(branchesuri, function(json){
-        branches = json;  
-        displayBranches();             
-      });  
-   
-      //creates html for each branch gotten
-      function displayBranches() {
-        if(branches.length == 0) { outhtml2 = outhtml2 + '<p>No Branches!</p></div>'; }
-        else {
-          outhtml2 = outhtml2 + '<p><strong>Branch List:</strong></p> <ul>';
-          outhtml2 = outhtml2 + '<table style="width:100%">';
-          outhtml2 = outhtml2 + '<tr><td><h3>Branch</h3><td><h3>Commits</h3></tr>';
-          
-          //for each branch in array
-          $.each(branches, function(index) {
-            outhtml2 = outhtml2 + '<tr>';
-            outhtml2 = outhtml2 + '<td>';
-            outhtml2 = outhtml2 + '<li><p><a href="'+branches[index].commit.url+'" target="_blank">'+branches[index].name+ '</a></p></li>';
-            outhtml2 = outhtml2 + '</td>';
-            outhtml2 = outhtml2 + '<td><p><a onClick="branchClick(\''+ branches[index].name+'\', \'' + repoName+ '\')" target="_blank">Details</a></p></td>';
-            outhtml2 = outhtml2 + '</tr>';
-          });
+    //displays getting branches message
+    $("#message").html('<h3 style="color:red;">Getting Branches...</h2>');
+    $("#message").show().delay(1000).queue(function(n) {
+     $(this).hide(); n();
+    });
 
-          outhtml2 = outhtml2 + '</table>';
-          outhtml2 = outhtml2 + '</ul></div>'; 
-        }
+    // displays branches
+    $.getJSON(branchesuri, function(json){
+      branches = json;  
+      displayBranches();             
+    });  
+ 
+    //creates html for each branch gotten
+    function displayBranches() {
+      if(branches.length == 0) { outhtml2 = outhtml2 + '<p>No Branches!</p></div>'; }
+      else {
+        outhtml2 = outhtml2 + '<p><strong>Branch List:</strong></p> <ul>';
+        outhtml2 = outhtml2 + '<table style="width:100%">';
+        outhtml2 = outhtml2 + '<tr><td><h3>Branch</h3><td><h3>Commits</h3></tr>';
+        
+        //for each branch in array
+        $.each(branches, function(index) {
+          outhtml2 = outhtml2 + '<tr>';
+          outhtml2 = outhtml2 + '<td>';
+          outhtml2 = outhtml2 + '<li><p><a href="'+branches[index].commit.url+'" target="_blank">'+branches[index].name+ '</a></p></li>';
+          outhtml2 = outhtml2 + '</td>';
+          outhtml2 = outhtml2 + '<td><p><a onClick="branchClick(\''+ branches[index].name+'\', \'' + repoName+ '\')" target="_blank">Details</a></p></td>';
+          outhtml2 = outhtml2 + '</tr>';
+        });
+        outhtml2 = outhtml2 + '</table>';
+        outhtml2 = outhtml2 + '</ul></div>'; 
+      }
 
-        //clear branches and clear commits
-        $('#ghapidata2').empty();
-        $('#ghapidata3').empty();
-        $('#ghapidata2').html('');
-        $('#ghapidata3').html(outhtml2);
-        $('#ghapidata2').hide();
-      } 
+      //set branch div html
+      $('#ghapidata3').html(outhtml2);
+    } 
   }
 
 
-  // display commits when branch is clicked 
+
+
+
+  /*
+   * Branch Click Function
+   * display commits when branch is clicked
+   */
   function branchClick(branchName, repoName) {
-      var outhtml2 = "";
-      var commits = [];
-      var cCount = 20;
-      var individual;
+    var outhtml2 = "";
+    var commits = [];
+    var cCount = 20;
+    var individual;
+    commitsuri  = 'https://api.github.com/repos/'+username+'/'+repoName+'/branches/'+branchName;
 
-      //commitsuri  = 'https://api.github.com/repos/'+username+'/'+repoName+'/commits?since=2014-08-26T23:43:48Z';
-      commitsuri  = 'https://api.github.com/repos/'+username+'/'+repoName+'/branches/'+branchName;
+    //displays getting commits message
+    $("#message").html('<h3 style="color:red;">Getting Commits...</h2>');
+    $("#message").show().delay(2000).queue(function(n) {
+     $(this).hide(); n();
+    });
+   
+    //set to hide commits div
+    commitsShowing = false;
 
-      //displays getting commits message
-      $("#message").html('<h3 style="color:red;">Getting Commits...</h2>');
-      $("#message").show().delay(2000).queue(function(n) {
-       $(this).hide(); n();
+    //network call to get commits
+    $.getJSON(commitsuri, function(json){ 
+      individual = json;
+
+      //if there are no commits
+      if(individual.commit.parents.length == 0) { 
+        console.log("No commits found");
+      }
+      else {
+        commitsuri  = json.commit.url;
+        commits = getNextCommits(20, commits, commitsuri, individual);
+      } 
+
+      //display commits once all network calls are made
+      $(document).ajaxStop(function () {
+        console.log(commits);
+        displayCommits();
       });
-     
-      // gets commits
-      $.getJSON(commitsuri, function(json){ 
-        individual = json;
-        console.log(json.commit);
+    });
 
-        //if there are no commits
-        if(individual.commit.parents.length == 0) { 
-          console.log("No commits found");
-        }
-        else {
-          commitsuri  = json.commit.url;
-          commits = getNextCommits(20, commits, commitsuri, individual);
-        } 
 
-        //display commits once all network calls are made
-        $(document).ajaxStop(function () {
-          console.log(commits);
-          displayCommits();
-        });
-      });
-
-    
-    //program to get commits by a chain.
+    //method to get commits by a chain
     function getNextCommits(count, cList, url, individual) {
-
       count -= 1;
       if(count == 0)
         return cList;
@@ -136,13 +142,13 @@
       $.getJSON(url, function(next){
         individual = next;
         console.log("getNextCommit(): " + count);
-        console.log(next);
         cList.push(next.commit);
 
         //if there is no next commit
         if(next.parents == null || next.parents.length == 0) { 
           count = 0;
-        }else {
+        }else{
+          //gets next commit
           url  = next.parents[0].url;
           cList = getNextCommits(count, cList, url, next);
         }
@@ -150,7 +156,8 @@
       return cList; 
     }
 
-    //creates html for  commits
+
+    //creates html for commits
     function displayCommits() {
       if(commits.length == 0) { outhtml2 = '<p>No commits!</p></div>'; }
       else {
@@ -158,6 +165,7 @@
         outhtml2 = outhtml2 + '<table style="width:100%">';
         outhtml2 = outhtml2 + '<tr><td><h3>message</h3><td><h3>time</h3><td><h3>author</h3></tr>';
         
+        //for each commit, make an entry in the table
         $.each(commits, function(index) {
           outhtml2 = outhtml2 + '<tr>';
           outhtml2 = outhtml2 + '<td>';
@@ -167,18 +175,30 @@
           outhtml2 = outhtml2 + '<td><p>' + commits[index].author.name + '</p></td>';
           outhtml2 = outhtml2 + '</tr>';
         });
-
         outhtml2 = outhtml2 + '</table>';
         outhtml2 = outhtml2 + '</ul></div>'; 
       }
-      $('#ghapidata2').empty();
+
+      //set data to table
       $('#ghapidata2').html(outhtml2);
-      $('#ghapidata2').show();
+
+      //if commits are not showing, display them
+      if(!commitsShowing) {
+        commitsShowing = true;
+        $('#ghapidata2').css('display', 'block');
+      }
     }
-}
+  } 
 
 
-//function when submit is clicked
+
+
+
+
+/*
+ * Submit Button Function
+ * function to get user info when username submitted
+ */
 $(function(){
   $('#ghsubmitbtn').on('click', function(e){
     $('#ghapidata').html('<div id="loader"><img src="css/loader.gif" alt="loading..."></div>');
@@ -199,44 +219,46 @@ $(function(){
         var reposnum     = json.public_repos;
         
         if(fullname == undefined) { fullname = username; }
-        
-        /* displays user information */
+       
+        //displays user information
         var outhtml = '<h2>'+fullname+' <span class="smallname">(@<a href="'+profileurl+'" target="_blank">'+username+'</a>)</span></h2>';
         outhtml = outhtml + '<div class="ghcontent"><div class="avi"><a href="'+profileurl+'" target="_blank"><img src="'+aviurl+'" width="80" height="80" alt="'+username+'"></a></div>';
         outhtml = outhtml + '<p>Followers: '+followersnum+' - Following: '+followingnum+'<br>Repos: '+reposnum+'</p></div>';
         outhtml = outhtml + '<div class="repolist clearfix">';
         
         //displays repositories 
-        var repositories;
+        var repos;
         $.getJSON(repouri, function(json){
-          repositories = json;   
+          repos = json;   
           outputPageContent();                
         });   
 
-        //creates html respository
+
+        //creates html for each respository
         function outputPageContent() {
 
           //if no repositories
-          if(repositories.length == 0) { outhtml = outhtml + '<p>No repos!</p></div>'; }
+          if(repos.length == 0) { outhtml = outhtml + '<p>No repos!</p></div>'; }
           else {
             outhtml = outhtml + '<p><strong>Repos List:</strong></p> <ul>';
 
-            //create html for each repository.
-            $.each(repositories, function(index) {
-              outhtml = outhtml + '<li><a onclick="repoClick(\''+repositories[index].name+'\')" target="_blank">'+repositories[index].name + '</a></li>';
+            //create html for each repository
+            $.each(repos, function(index) {
+              outhtml += '<li><a onclick="repoClick(\''+repos[index].name+'\')" target="_blank">'+ repos[index].name + '</a></li>';
             });
             outhtml = outhtml + '</ul></div>'; 
           }
-
-          $('#ghapidata').empty;
           $('#ghapidata').html(outhtml);
-        } // end outputPageContent()
-      } // end else statement
-    }); // end requestJSON Ajax call
-  }); // end click event handler
+        } 
+      } 
+    }); 
+  }); 
   
 
-  //function to send web request
+  /*
+   * Network Request Function
+   * function to send web request
+   */
   function requestJSON(url, callback) {
     $.ajax({
       url: url,

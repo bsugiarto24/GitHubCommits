@@ -99,8 +99,13 @@ a:hover {
   border-radius: 4px;
 }
 
-#ghapidata,#ghapidata2,#ghapidata3 {
+#ghapidata,#ghapidata3 {
   display: block;
+  padding: 25px 0;
+}
+
+#ghapidata2 {
+  display: none;
   padding: 25px 0;
 }
 
@@ -110,7 +115,6 @@ a:hover {
   height: 200px;
   margin: 0 auto;
 }
-
 
 /* page content styles */
 .smallname {
